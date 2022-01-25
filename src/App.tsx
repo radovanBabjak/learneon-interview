@@ -1,27 +1,43 @@
-import { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik'; 
+import { useState, useEffect } from 'react';
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from 'formik'; 
 import * as Yup from 'yup';
 import { SpaceXLaunches } from './components/SpaceXLaunches'
 
 
+const searchSchema = Yup.object({
+
+  spaceXSearch: Yup.string()
+    .min(3, 'Must be at least 3 characters long')
+    .required('Required')
+});
+
+type searchValues = Yup.InferType<typeof searchSchema>
+
 function App() {
   const [spaceXSearchTerm, setSpaceXSearchTerm] = useState<string>('');
+
+  const AutoSubmit = () => {
+
+    const { values, submitForm } = useFormikContext<searchValues>();
+    useEffect(() => {
+  
+        if (values.spaceXSearch.length >= 3) {
+            submitForm();
+        }
+    }, [values, submitForm]);
+    return null;
+  };
 
   return (
     <div>
       <Formik
         initialValues={{ spaceXSearch: '' }}
 
-        validationSchema={ Yup.object({
+        validationSchema={ searchSchema }
 
-          spaceXSearch: Yup.string()
-            .min(3, 'Must be at least 3 characters long')
-            .required('Required')
-        })}
+        onSubmit={ async ({ spaceXSearch }, { setSubmitting }) => {
 
-        onSubmit={ async (values, { setSubmitting }) => {
-
-          setSpaceXSearchTerm(values.spaceXSearch)
+          setSpaceXSearchTerm(spaceXSearch)
           setSubmitting(false);
         }}
       >
