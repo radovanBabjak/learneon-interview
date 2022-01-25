@@ -1,7 +1,21 @@
+import { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik'; 
 import * as Yup from 'yup';
 
+const LAUNCHES_QUERY = (rocketName: string) => `
+{
+  launchesPast(find: {rocket_name: "${ rocketName }"}) {
+    mission_name
+    launch_date_local
+    rocket {
+      rocket_name
+    }
+  }
+}
+`
+
 function App() {
+  const [launches, setLaunches] = useState({});
 
   return (
     <div>
@@ -15,11 +29,18 @@ function App() {
             .required('Required')
         })}
 
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            setSubmitting(false);
-          }, 400);
+        onSubmit={ async (values, { setSubmitting }) => {
+
+          await fetch('https://api.spacex.land/graphql/', {
+            method: "POST",
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({ 
+              query: LAUNCHES_QUERY(values.spaceXSearch) 
+            })
+          }).then(response => response.json())
+          .then(responseJson => setLaunches(responseJson.data));
+
+          setSubmitting(false);
         }}
       >
 
@@ -32,10 +53,12 @@ function App() {
             <Field type="text" id="spaceXSearch" name="spaceXSearch" />
             <ErrorMessage name="spaceXSearch" component="div" />
           
-            <button type="submit">Submit</button>
+            <button type="submit"> Submit </button>
           </Form>
         )}
      </Formik>
+
+     {JSON.stringify(launches, null, 2)}
     </div>
   );
 }
