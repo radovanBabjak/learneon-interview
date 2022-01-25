@@ -1,21 +1,11 @@
 import { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik'; 
 import * as Yup from 'yup';
+import { SpaceXLaunches } from './components/SpaceXLaunches'
 
-const LAUNCHES_QUERY = (rocketName: string) => `
-{
-  launchesPast(find: {rocket_name: "${ rocketName }"}) {
-    mission_name
-    launch_date_local
-    rocket {
-      rocket_name
-    }
-  }
-}
-`
 
 function App() {
-  const [launches, setLaunches] = useState({});
+  const [spaceXSearchTerm, setSpaceXSearchTerm] = useState<string>('');
 
   return (
     <div>
@@ -31,15 +21,7 @@ function App() {
 
         onSubmit={ async (values, { setSubmitting }) => {
 
-          await fetch('https://api.spacex.land/graphql/', {
-            method: "POST",
-            headers: { "Content-Type": "application/json"},
-            body: JSON.stringify({ 
-              query: LAUNCHES_QUERY(values.spaceXSearch) 
-            })
-          }).then(response => response.json())
-          .then(responseJson => setLaunches(responseJson.data));
-
+          setSpaceXSearchTerm(values.spaceXSearch)
           setSubmitting(false);
         }}
       >
@@ -58,7 +40,7 @@ function App() {
         )}
      </Formik>
 
-     {JSON.stringify(launches, null, 2)}
+     { spaceXSearchTerm && <SpaceXLaunches spaceXSearchTerm={ spaceXSearchTerm } /> }
     </div>
   );
 }
