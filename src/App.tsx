@@ -14,17 +14,17 @@ const searchSchema = Yup.object({
 type searchValues = Yup.InferType<typeof searchSchema>
 
 function App() {
-  const [spaceXSearchTerm, setSpaceXSearchTerm] = useState<string>('');
+  const [rocketName, setRocketName] = useState<string>('');
 
-  const AutoSubmit = () => {
-
+  const AutoSubmitSpaceXSearch = () => {
     const { values, submitForm } = useFormikContext<searchValues>();
     useEffect(() => {
   
-        if (values.spaceXSearch.length >= 3) {
-            submitForm();
-        }
+      if (values.spaceXSearch.length >= 3) {
+        submitForm();
+      }
     }, [values, submitForm]);
+
     return null;
   };
 
@@ -32,31 +32,27 @@ function App() {
     <div>
       <Formik
         initialValues={{ spaceXSearch: '' }}
-
         validationSchema={ searchSchema }
-
         onSubmit={ async ({ spaceXSearch }, { setSubmitting }) => {
 
-          setSpaceXSearchTerm(spaceXSearch)
+          setRocketName(spaceXSearch)
           setSubmitting(false);
         }}
       >
-
         {({
           handleSubmit,
         }) => (
-
           <Form onSubmit={handleSubmit}>
             <label htmlFor="spaceXSearch"> Search: </label>
             <Field type="text" id="spaceXSearch" name="spaceXSearch" />
             <ErrorMessage name="spaceXSearch" component="div" />
           
-            <button type="submit"> Submit </button>
+            <AutoSubmitSpaceXSearch />
           </Form>
         )}
      </Formik>
 
-     { spaceXSearchTerm && <SpaceXLaunches spaceXSearchTerm={ spaceXSearchTerm } /> }
+     { rocketName && <SpaceXLaunches rocketName={ rocketName } /> }
     </div>
   );
 }
