@@ -1,27 +1,9 @@
+import { ReactElement } from 'react';
 import {
     useQuery,
     gql
 } from "@apollo/client";
-
-
-interface IProps {
-  rocketName: string,
-}
-
-interface RocketInventory {
-  id: number;
-  model: string;
-  year: number;
-  stock: number;
-}
-
-interface RocketInventoryData {
-  rocketInventory: RocketInventory[];
-}
-
-interface RocketInventoryVars {
-  year: number;
-}
+import { launches, searchValues } from '../types/types';
 
 
 const LAUNCHES_QUERY = gql`
@@ -40,18 +22,19 @@ query GetLaunches($rocket_name: String) {
 }
 `;
 
-export function SpaceXLaunches({ rocketName }: IProps) {
+export function SpaceXLaunches({ spaceXSearch }: searchValues): ReactElement {
    
   const { loading, error, data } = useQuery(LAUNCHES_QUERY, {
-      variables: {rocket_name: rocketName},
+      variables: {rocket_name: spaceXSearch},
   });
 
   if (loading) return <p className="flex flex-col items-center"> Loading... </p>;
   if (error) return <p className="flex flex-col items-center"> Error : {error.message} </p>;
+  if (!data?.launchesPast.length) return <p className="flex flex-col items-center"> No results found </p>;
 
   return (
     <div className="flex flex-wrap" >      
-        {data.launchesPast.map(({ id, mission_name, rocket, links, details }: any) => {
+        {data?.launchesPast.map(({ id, mission_name, rocket, links, details }: launches) => {
           return  (
             <div className="box-border lg:w-1/4 md:w-1/2 sm:w-full p-5 text-white" key={ id }>
               <div className="bg-stone-800 h-full p-3 rounded shadow-sm shadow-stone-600">
