@@ -46,34 +46,37 @@ export function SpaceXLaunches({ rocketName }: IProps) {
       variables: {rocket_name: rocketName},
   });
 
-  if (loading) return <p> Loading... </p>;
-  if (error) return <p> Error : {error.message} </p>;
+  if (loading) return <p className="flex flex-col items-center"> Loading... </p>;
+  if (error) return <p className="flex flex-col items-center"> Error : {error.message} </p>;
 
   return (
-      <pre>      
-          {data.launchesPast.map(({ id, mission_name, rocket, links, details }: any) => {
-            return  (
-              <div key={ id }>
-                <h3>{ mission_name }</h3>
-                <img 
-                  width="150"
-                  height="150"
-                  src={ links.mission_patch_small }
-                />
-                <div>
-                  <label> Rocket name: </label>
-                  <p>{ rocket.rocket_name }</p>
-                </div>
-
-                { details && (
-                  <div>
-                    <label> Details: </label>
-                    <p>{ details }</p>
-                  </div>
-                )}
+    <div className="flex flex-wrap" >      
+        {data.launchesPast.map(({ id, mission_name, rocket, links, details }: any) => {
+          return  (
+            <div className="box-border lg:w-1/4 md:w-1/2 sm:w-full p-5 text-white" key={ id }>
+              <div className="bg-stone-800 h-full p-3 rounded shadow-sm shadow-stone-600">
+              <img 
+                width="150"
+                height="150"
+                src={ links.mission_patch_small }
+                alt={ mission_name }
+                className="mx-auto"
+              />
+              <div className="flex">
+                <label className="text-gray-400"> Rocket name: </label>
+                <p>{ rocket.rocket_name }</p>
               </div>
-            );
-          })}
-      </pre>
+
+              { details && (
+                <div className="flex">
+                  <label className="text-gray-400"> Details: </label>
+                  <p>{ details }</p>
+                </div>
+              )}
+            </div>
+            </div>
+          );
+        })}
+    </div>
   ); 
 }

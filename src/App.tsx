@@ -43,7 +43,7 @@ function App() {
           handleSubmit,
         }) => (
           <Form className='mx-auto w-max h-80 flex flex-col justify-center items-center' onSubmit={handleSubmit}>
-            <label className='text-5xl p-3 font-mono' htmlFor="spaceXSearch"> Search: </label>
+            <label className='text-5xl p-3 font-serif' htmlFor="spaceXSearch"> Enter rocket name: </label>
             <Field className="bg-stone-800 h-10 border-2 rounded text-white p-5" type="text" id="spaceXSearch" name="spaceXSearch" />
             <ErrorMessage name="spaceXSearch" component="div" />
           
