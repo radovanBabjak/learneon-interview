@@ -5,7 +5,7 @@ import {
 
 
 interface IProps {
-    spaceXSearchTerm: string,
+  rocketName: string,
 }
 
 interface RocketInventory {
@@ -27,19 +27,23 @@ interface RocketInventoryVars {
 const LAUNCHES_QUERY = gql`
 query GetLaunches($rocket_name: String) {
     launchesPast(find: { rocket_name: $rocket_name }) {
+    id
     mission_name
-    launch_date_local
+    links {
+      mission_patch_small
+    }
     rocket {
       rocket_name
     }
+    details
   }
 }
 `;
 
-export function SpaceXLaunches({ spaceXSearchTerm }: IProps) {
+export function SpaceXLaunches({ rocketName }: IProps) {
    
   const { loading, error, data } = useQuery(LAUNCHES_QUERY, {
-      variables: {rocket_name: spaceXSearchTerm},
+      variables: {rocket_name: rocketName},
   });
 
   if (loading) return <p> Loading... </p>;
@@ -47,16 +51,29 @@ export function SpaceXLaunches({ spaceXSearchTerm }: IProps) {
 
   return (
       <pre>      
-          {JSON.stringify(data, null, 2)}
+          {data.launchesPast.map(({ id, mission_name, rocket, links, details }: any) => {
+            return  (
+              <div key={ id }>
+                <h3>{ mission_name }</h3>
+                <img 
+                  width="150"
+                  height="150"
+                  src={ links.mission_patch_small }
+                />
+                <div>
+                  <label> Rocket name: </label>
+                  <p>{ rocket.rocket_name }</p>
+                </div>
+
+                { details && (
+                  <div>
+                    <label> Details: </label>
+                    <p>{ details }</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
       </pre>
   ); 
-
-  // return data.map(({ mission_name, rocket }: any) => (
-  //     // <div key={currency}>
-  //     <div>
-  //         <p>
-  //             {mission_name}: {rocket}
-  //         </p>
-  //     </div>
-  // ));
 }
